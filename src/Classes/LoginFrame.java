@@ -1,7 +1,6 @@
-package View;
+package Classes;
 
 import model.DbConnection;
-import model.Global;
 
 import javax.swing.*;
 import java.awt.*;

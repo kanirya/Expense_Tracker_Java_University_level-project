@@ -1,11 +1,10 @@
-package View;
+package Classes;
 
 import model.DbConnection;
 
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.*;
 import java.util.Vector;
 

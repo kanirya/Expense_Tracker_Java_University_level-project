@@ -1,10 +1,8 @@
-import View.LoginFrame;
+import Classes.LoginFrame;
 import model.DbConnection;
 
 import javax.swing.*;
-import java.awt.*;
 import java.sql.*;
-import java.util.Scanner;
 
 public class Main {
     static Connection connection = DbConnection.getConnection();
