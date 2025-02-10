@@ -1,11 +1,13 @@
 package View;
 
 import model.DbConnection;
+import model.Global;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.*;
+
+import static model.Global.Username;
 
 public class LoginFrame extends JFrame {
     private JTextField usernameField;
@@ -16,7 +18,7 @@ public class LoginFrame extends JFrame {
         setTitle("Login - Expense Tracker");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridBagLayout()); // Better alignment
+        setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -34,8 +36,6 @@ public class LoginFrame extends JFrame {
 
         gbc.gridx = 1;
         usernameField = new JTextField(15);
-        usernameField.setFocusable(true);
-        usernameField.setPreferredSize(new Dimension(150, 25));
         add(usernameField, gbc);
 
         gbc.gridx = 0;
@@ -44,8 +44,6 @@ public class LoginFrame extends JFrame {
 
         gbc.gridx = 1;
         passwordField = new JPasswordField(15);
-        passwordField.setFocusable(true);
-        passwordField.setPreferredSize(new Dimension(150, 25));
         add(passwordField, gbc);
 
         gbc.gridx = 0;
@@ -60,9 +58,7 @@ public class LoginFrame extends JFrame {
 
         // Button Listeners
         loginButton.addActionListener(e -> loginUser());
-        registerButton.addActionListener(e -> {
-            new RegisterFrame(); // Open register window
-        });
+        registerButton.addActionListener(e -> new RegisterFrame());
 
         setLocationRelativeTo(null);
         setVisible(true);
@@ -90,15 +86,17 @@ public class LoginFrame extends JFrame {
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
+                    Username = username; // Set the global variable
                     JOptionPane.showMessageDialog(this, "Login Successful!");
-                    dispose();
-                    new MainDashboard();
+
+                    dispose(); // Close login window
+                    SwingUtilities.invokeLater(() -> new MainDashboard()); // Open dashboard in the correct thread
+
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

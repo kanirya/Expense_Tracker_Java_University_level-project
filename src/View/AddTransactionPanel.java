@@ -1,6 +1,7 @@
 package View;
 
 import model.DbConnection;
+import model.Global;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,8 +81,9 @@ public class AddTransactionPanel extends JPanel {
     private void addTransaction() {
         String amountText = amountField.getText().trim();
         String selectedCategory = (String) categoryDropdown.getSelectedItem();
+        String username = Global.Username; // Get current logged-in user
 
-        if (amountText.isEmpty() || selectedCategory == null) {
+        if (amountText.isEmpty() || selectedCategory == null || username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -96,10 +98,14 @@ public class AddTransactionPanel extends JPanel {
         }
 
         try (Connection connection = DbConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement("INSERT INTO Transactions (CategoryId, Amount) VALUES (?, ?)")) {
-            stmt.setInt(1, categoryId);
-            stmt.setDouble(2, amount);
+             PreparedStatement stmt = connection.prepareStatement(
+                     "INSERT INTO Transactions (Username, CategoryId, Amount, TransactionDate) VALUES (?, ?, ?, GETDATE())")) {
+
+            stmt.setString(1, username); // Store the username
+            stmt.setInt(2, categoryId);
+            stmt.setDouble(3, amount);
             stmt.executeUpdate();
+
             JOptionPane.showMessageDialog(this, "Transaction added successfully!");
             amountField.setText("");
         } catch (SQLException e) {

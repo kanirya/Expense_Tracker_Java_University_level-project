@@ -1,6 +1,7 @@
 package View;
 
 import model.DbConnection;
+import model.Global;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -59,7 +60,7 @@ public class TransactionHistoryPanel extends JPanel {
     }
 
     private JLabel createDashboardLabel(String title, Color color) {
-        JLabel label = new JLabel(title + ": Rs0.00", SwingConstants.CENTER);
+        JLabel label = new JLabel(title + ": Rs 0.00", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 16));
         label.setForeground(Color.WHITE);
         label.setOpaque(true);
@@ -69,9 +70,21 @@ public class TransactionHistoryPanel extends JPanel {
     }
 
     private void loadTransactionHistory() {
+        tableModel.setRowCount(0); // Clear existing data
+        String username = Global.Username; // Get the logged-in user's username
+
+        if (username == null || username.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Error: Username not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         try (Connection connection = DbConnection.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT t.Id, c.Name, t.Amount, t.TransactionDate FROM Transactions t JOIN ExpenseCategories c ON t.CategoryId = c.Id")) {
+             PreparedStatement stmt = connection.prepareStatement(
+                     "SELECT t.Id, c.Name, t.Amount, t.TransactionDate FROM Transactions t " +
+                             "JOIN ExpenseCategories c ON t.CategoryId = c.Id WHERE t.Username = ?")) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Object[] rowData = {
@@ -90,11 +103,19 @@ public class TransactionHistoryPanel extends JPanel {
     private void updateDashboard() {
         double totalIncome = 0;
         double totalExpense = 0;
+        String username = Global.Username; // Get the logged-in user
+
+        if (username == null || username.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Error: Username not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try (Connection connection = DbConnection.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT SUM(Amount) AS Total FROM Transactions WHERE Amount > 0")) {
+             PreparedStatement stmt = connection.prepareStatement(
+                     "SELECT SUM(Amount) AS Total FROM Transactions WHERE Username = ? AND Amount > 0")) {
 
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 totalIncome = rs.getDouble("Total");
             }
@@ -103,9 +124,11 @@ public class TransactionHistoryPanel extends JPanel {
         }
 
         try (Connection connection = DbConnection.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT SUM(Amount) AS Total FROM Transactions WHERE Amount < 0")) {
+             PreparedStatement stmt = connection.prepareStatement(
+                     "SELECT SUM(Amount) AS Total FROM Transactions WHERE Username = ? AND Amount < 0")) {
 
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 totalExpense = rs.getDouble("Total");
             }
@@ -117,6 +140,6 @@ public class TransactionHistoryPanel extends JPanel {
 
         totalIncomeLabel.setText("Total Income: Rs " + String.format("%.2f", totalIncome));
         totalExpenseLabel.setText("Total Expense: Rs " + String.format("%.2f", totalExpense));
-        netAmountLabel.setText("Net Amount:Rs " + String.format("%.2f", netAmount));
+        netAmountLabel.setText("Net Amount: Rs " + String.format("%.2f", netAmount));
     }
 }

@@ -2,9 +2,7 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
+
 public class MainDashboard extends JFrame {
     private JPanel mainPanel;
 
@@ -14,29 +12,33 @@ public class MainDashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Menu Panel
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(1, 4));
 
-        JButton addCategoryButton = new JButton("Category");
-        JButton addTransactionButton = new JButton("Transaction");
-        JButton viewTransactionsButton = new JButton("View Transactions");
-        JButton viewUsersButton = new JButton("View Users");
+        JButton dashboardButton = new JButton("Dashboard");
+        JButton transactionButton = new JButton("Transaction");
+        JButton categoryButton = new JButton("Category");
+        JButton usersButton = new JButton("View Users");
 
-        menuPanel.add(addCategoryButton);
-        menuPanel.add(addTransactionButton);
-        menuPanel.add(viewTransactionsButton);
-        menuPanel.add(viewUsersButton);
+        menuPanel.add(dashboardButton);
+        menuPanel.add(transactionButton);
+        menuPanel.add(categoryButton);
+        menuPanel.add(usersButton);
 
+        // Main Panel (Default: TransactionHistoryPanel)
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
+        switchPanel(new TransactionHistoryPanel()); // Show TransactionHistoryPanel by default
 
         add(menuPanel, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
 
-        addCategoryButton.addActionListener(e -> switchPanel(new AddCategoryPanel()));
-        addTransactionButton.addActionListener(e -> switchPanel(new AddTransactionPanel()));
-        viewTransactionsButton.addActionListener(e -> switchPanel(new TransactionHistoryPanel()));
-        viewUsersButton.addActionListener(e -> switchPanel(new UserListPanel()));
+        // Button Actions
+        dashboardButton.addActionListener(e -> switchPanel(new TransactionHistoryPanel()));  // Show by default
+        transactionButton.addActionListener(e -> switchPanel(new AddTransactionPanel()));
+        categoryButton.addActionListener(e -> switchPanel(new AddCategoryPanel()));
+        usersButton.addActionListener(e -> switchPanel(new UserListPanel()));
 
         setLocationRelativeTo(null);
         setVisible(true);
@@ -47,5 +49,9 @@ public class MainDashboard extends JFrame {
         mainPanel.add(panel, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MainDashboard::new);
     }
 }

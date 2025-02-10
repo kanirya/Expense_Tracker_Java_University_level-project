@@ -1,6 +1,7 @@
 package View;
 
 import model.DbConnection;
+import model.Global;
 
 import javax.swing.*;
 import java.awt.*;
@@ -102,6 +103,7 @@ public class RegisterFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "User Registered Successfully!");
                 dispose();
                 new LoginFrame();
+                Global.Username=username;
             }
 
         } catch (SQLException e) {
