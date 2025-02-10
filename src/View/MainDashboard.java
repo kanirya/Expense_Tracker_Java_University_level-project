@@ -17,8 +17,8 @@ public class MainDashboard extends JFrame {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(1, 4));
 
-        JButton addCategoryButton = new JButton("Add Category");
-        JButton addTransactionButton = new JButton("Add Transaction");
+        JButton addCategoryButton = new JButton("Category");
+        JButton addTransactionButton = new JButton("Transaction");
         JButton viewTransactionsButton = new JButton("View Transactions");
         JButton viewUsersButton = new JButton("View Users");
 
@@ -33,10 +33,10 @@ public class MainDashboard extends JFrame {
         add(menuPanel, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
 
-//        addCategoryButton.addActionListener(e -> switchPanel(new AddCategoryPanel()));
-//        addTransactionButton.addActionListener(e -> switchPanel(new AddTransactionPanel()));
-//        viewTransactionsButton.addActionListener(e -> switchPanel(new TransactionHistoryPanel()));
-//        viewUsersButton.addActionListener(e -> switchPanel(new UserListPanel()));
+        addCategoryButton.addActionListener(e -> switchPanel(new AddCategoryPanel()));
+        addTransactionButton.addActionListener(e -> switchPanel(new AddTransactionPanel()));
+        viewTransactionsButton.addActionListener(e -> switchPanel(new TransactionHistoryPanel()));
+        viewUsersButton.addActionListener(e -> switchPanel(new UserListPanel()));
 
         setLocationRelativeTo(null);
         setVisible(true);
